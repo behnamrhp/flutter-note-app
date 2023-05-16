@@ -59,6 +59,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   onPressed: () => handleSubmitUser(_email, _password),
                   child: const Text('Register'),
                 ),
+                TextButton(
+                    onPressed: () => {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/login/', (route) => false)
+                        },
+                    child: const Text('already have an account?!'))
               ]);
             default:
               return const Text('Loading...');

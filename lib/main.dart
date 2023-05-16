@@ -1,4 +1,6 @@
 import 'package:dart/pages/home_page.dart';
+import 'package:dart/pages/login_page.dart';
+import 'package:dart/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -8,6 +10,11 @@ void main() {
     title: 'Flutter Demo',
     theme: ThemeData(primarySwatch: Colors.blue),
     home: const HomePage(),
+    routes: {
+      '/login/': (context) => const LoginPage(),
+      '/register/': (context) => const RegisterPage(),
+      '/home/': (context) => const HomePage(),
+    },
   ));
 }
 
@@ -26,9 +33,10 @@ Future<UserCredential?> handleSubmitUser(TextEditingController emailController,
             email: email,
             password: password,
           );
+    print(userCredentials);
     return userCredentials;
   } catch (error) {
-    print('_______________error is _________');
+    print('___________error is _________');
     print(error);
   }
   return null;
