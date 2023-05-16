@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "255005773443",
+    "project_id": "mynotes-flutter-9ff73",
+    "storage_bucket": "mynotes-flutter-9ff73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255005773443:android:bba3dd67526885ecb415b6",
+        "android_client_info": {
+          "package_name": "com.example.dart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "255005773443-ebvto5c4ug6tcsjml4n7o2jlta6jfn3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlJ7kuQH7Lu8ozlSPCvyuMJNA963bo_q8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "255005773443-ebvto5c4ug6tcsjml4n7o2jlta6jfn3d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "255005773443-br52mu25vj39p6rdkmk16pes3ngv0o1e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dart.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
