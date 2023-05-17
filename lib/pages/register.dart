@@ -1,3 +1,4 @@
+import 'package:dart/constants/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dart/firebase_options.dart';
 import 'package:dart/main.dart';
@@ -62,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextButton(
                     onPressed: () => {
                           Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/login/', (route) => false)
+                              loginPage, (route) => false)
                         },
                     child: const Text('already have an account?!'))
               ]);

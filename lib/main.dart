@@ -1,3 +1,4 @@
+import 'package:dart/constants/routes.dart';
 import 'package:dart/pages/home_page.dart';
 import 'package:dart/pages/login_page.dart';
 import 'package:dart/pages/register.dart';
@@ -11,9 +12,9 @@ void main() {
     theme: ThemeData(primarySwatch: Colors.blue),
     home: const HomePage(),
     routes: {
-      '/login/': (context) => const LoginPage(),
-      '/register/': (context) => const RegisterPage(),
-      '/home/': (context) => const HomePage(),
+      loginPage: (context) => const LoginPage(),
+      registerPage: (context) => const RegisterPage(),
+      homePage: (context) => const HomePage(),
     },
   ));
 }
@@ -21,23 +22,17 @@ void main() {
 Future<UserCredential?> handleSubmitUser(TextEditingController emailController,
     TextEditingController passwordController,
     {bool isRegister = true}) async {
-  try {
-    final email = emailController.text;
-    final password = passwordController.text;
-    final userCredentials = isRegister
-        ? await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          )
-        : await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-    print(userCredentials);
-    return userCredentials;
-  } catch (error) {
-    print('___________error is _________');
-    print(error);
-  }
-  return null;
+  final email = emailController.text;
+  final password = passwordController.text;
+  final userCredentials = isRegister
+      ? await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        )
+      : await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+  print(userCredentials);
+  return userCredentials;
 }

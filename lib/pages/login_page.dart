@@ -1,9 +1,11 @@
+import 'package:dart/constants/routes.dart';
 import 'package:dart/firebase_options.dart';
 import 'package:dart/main.dart';
 import 'package:dart/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -66,10 +68,21 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final user = await handleSubmitUser(_email, _password,
-                          isRegister: false);
-                      if (user != null) {
-                        Navigator.of(context).pushReplacementNamed('/home/');
+                      try {
+                        final user = await handleSubmitUser(_email, _password,
+                            isRegister: false);
+                        if (user != null && context.mounted) {
+                          Navigator.of(context).pushReplacementNamed(homePage);
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        devtools.log(e.code);
+                        if (e.code == 'user-not-found') {
+                          await showErrorDialog(context, 'User not found');
+                        } else if (e.code == 'wrong-password') {
+                          await showErrorDialog(context, 'Wrong credentials');
+                        } else {
+                          await showErrorDialog(context, 'Errod: ${e.code}');
+                        }
                       }
                     },
                     child: const Text('Login'),
@@ -77,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextButton(
                       onPressed: () => {
                             Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/register/', (route) => false)
+                                registerPage, (route) => false)
                           },
                       child: const Text(
                           'haven\'t register yet?! go for registration'))
@@ -88,4 +101,23 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+}
+
+Future<void> showErrorDialog(BuildContext context, String message) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('An error occured'),
+        content: Text(message),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Ok'))
+        ],
+      );
+    },
+  );
 }
