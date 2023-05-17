@@ -1,11 +1,10 @@
 import 'package:dart/constants/routes.dart';
-import 'package:dart/firebase_options.dart';
-import 'package:dart/main.dart';
 import 'package:dart/pages/home_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:dart/services/auth/auth_exception.dart';
+import 'package:dart/services/auth/auth_service.dart';
+import 'package:dart/utils/show_error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+import 'package:dart/utils/user_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -36,15 +35,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
+      future: AuthService.firebase().initialize(),
       builder: (context, snapshot) {
-        print('we are in builder');
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            print('we are in connection stat of snapshot');
-            final user = FirebaseAuth.instance.currentUser;
+            final user = AuthService.firebase().currentUser;
 
             if (user != null) {
               return const HomePage();
@@ -69,20 +64,31 @@ class _LoginPageState extends State<LoginPage> {
                   TextButton(
                     onPressed: () async {
                       try {
-                        final user = await handleSubmitUser(_email, _password,
+                        await handleSubmitUser(_email, _password,
                             isRegister: false);
-                        if (user != null && context.mounted) {
+
+                        final user = AuthService.firebase().currentUser;
+                        if (user?.isEmailVerified ?? false) {
                           Navigator.of(context).pushReplacementNamed(homePage);
-                        }
-                      } on FirebaseAuthException catch (e) {
-                        devtools.log(e.code);
-                        if (e.code == 'user-not-found') {
-                          await showErrorDialog(context, 'User not found');
-                        } else if (e.code == 'wrong-password') {
-                          await showErrorDialog(context, 'Wrong credentials');
                         } else {
-                          await showErrorDialog(context, 'Errod: ${e.code}');
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              verifyEmailRoute, (route) => false);
                         }
+                      } on UserNotFoundAuthException {
+                        await showErrorDialog(
+                          context,
+                          'User not found',
+                        );
+                      } on WrongPasswordAuthException {
+                        await showErrorDialog(
+                          context,
+                          'Wrong credentials',
+                        );
+                      } on GenericAuthException {
+                        await showErrorDialog(
+                          context,
+                          'Authentication error',
+                        );
                       }
                     },
                     child: const Text('Login'),
@@ -101,23 +107,4 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-}
-
-Future<void> showErrorDialog(BuildContext context, String message) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('An error occured'),
-        content: Text(message),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Ok'))
-        ],
-      );
-    },
-  );
 }
