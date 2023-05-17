@@ -38,8 +38,10 @@ class _LoginPageState extends State<LoginPage> {
         options: DefaultFirebaseOptions.currentPlatform,
       ),
       builder: (context, snapshot) {
+        print('we are in builder');
         switch (snapshot.connectionState) {
           case ConnectionState.done:
+            print('we are in connection stat of snapshot');
             final user = FirebaseAuth.instance.currentUser;
 
             if (user != null) {
@@ -63,8 +65,12 @@ class _LoginPageState extends State<LoginPage> {
                         const InputDecoration(hintText: 'Enter your password'),
                   ),
                   TextButton(
-                    onPressed: () => {
-                      handleSubmitUser(_email, _password, isRegister: false)
+                    onPressed: () async {
+                      final user = await handleSubmitUser(_email, _password,
+                          isRegister: false);
+                      if (user != null) {
+                        Navigator.of(context).pushReplacementNamed('/home/');
+                      }
                     },
                     child: const Text('Login'),
                   ),
