@@ -12,7 +12,7 @@ class DatabaseNote {
   });
 
   DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map[idColumnName] as int,
+      : id = map[noteIdColumnName] as int,
         userId = map[userIdColumnName] as int,
         text = map[textColumnName] as String,
         isSyncedWithCloud =

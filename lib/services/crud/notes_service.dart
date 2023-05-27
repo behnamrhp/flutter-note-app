@@ -2,12 +2,10 @@ import 'package:dart/services/crud/models/model_note.dart';
 import 'package:dart/services/crud/models/model_user.dart';
 import 'package:dart/services/crud/notes_exceptions.dart';
 import 'package:dart/services/crud/notes_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-@immutable
 class NotesService implements NotesProvider {
   Database? _db;
 
