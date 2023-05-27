@@ -5,11 +5,8 @@ import 'package:dart/services/crud/notes_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'package:path_provider/path_provider.dart';
 
-///
-///@todo: should be completed based on this git codes
 @immutable
 class NotesService implements NotesProvider {
   Database? _db;
@@ -39,7 +36,7 @@ class NotesService implements NotesProvider {
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     final db = _getDatabaseOrThrow();
 
-    final dbUser = getUser(email: owner.email);
+    final dbUser = await getUser(email: owner.email);
 
     if (dbUser != owner) throw CouldNotFindUser();
 
@@ -62,45 +59,87 @@ class NotesService implements NotesProvider {
   }
 
   @override
-  Future createUser({required String email}) {
-    // TODO: implement createUser
-    throw UnimplementedError();
+  Future<DatabaseUser> createUser({required String email}) async {
+    final db = _getDatabaseOrThrow();
+    // get check user exists
+    final isUserExists = await db.query(userTable,
+        limit: 1, where: 'email = ?', whereArgs: [email.toLowerCase()]);
+    if (isUserExists.isNotEmpty) {
+      throw UserAlreadyExists();
+    }
+    // insert new user
+    final newUserId = await db.insert(userTable, {
+      emailColumn: email,
+    });
+    // return user database
+    return DatabaseUser(id: newUserId, email: email);
   }
 
   @override
-  Future<int> deleteAllNotes() {
-    // TODO: implement deleteAllNotes
-    throw UnimplementedError();
+  Future<int> deleteAllNotes() async {
+    // get db
+    final db = _getDatabaseOrThrow();
+    // delete notes all rows
+    return await db.delete(userTable);
   }
 
   @override
-  Future<void> deleteNote({required int id}) {
-    // TODO: implement deleteNote
-    throw UnimplementedError();
+  Future<void> deleteNote({required int id}) async {
+    // get db
+    final db = _getDatabaseOrThrow();
+    // delete node
+    final deletedCount =
+        await db.delete(noteTable, where: 'id = ?', whereArgs: [id]);
+    // check note deleted
+    if (deletedCount == 0) {
+      throw CouldNotDeleteNote();
+    }
   }
 
   @override
-  Future<void> deleteUser({required String email}) {
-    // TODO: implement deleteUser
-    throw UnimplementedError();
+  Future<void> deleteUser({required String email}) async {
+    final db = _getDatabaseOrThrow();
+    final deletedCount = await db.delete(userTable,
+        where: 'email = ?', whereArgs: [email.toLowerCase()]);
+    if (deletedCount == 0) {
+      throw CouldNotDeleteUser();
+    }
   }
 
   @override
-  Future<Iterable<DatabaseNote>> getAllNotes() {
-    // TODO: implement getAllNotes
-    throw UnimplementedError();
+  Future<Iterable<DatabaseNote>> getAllNotes() async {
+    final db = _getDatabaseOrThrow();
+
+    final notes = await db.query(noteTable);
+
+    return notes.map((note) => DatabaseNote.fromRow(note));
   }
 
   @override
-  Future<DatabaseNote> getNote({required int id}) {
-    // TODO: implement getNote
-    throw UnimplementedError();
+  Future<DatabaseNote> getNote({required int id}) async {
+    // get db
+    final db = _getDatabaseOrThrow();
+    // get note
+    final note = await db.query(noteTable, where: 'id = ?', whereArgs: [id]);
+    // check exists
+    if (note.isEmpty) {
+      throw CouldNotFindNote();
+    }
+    // return note model
+    return DatabaseNote.fromRow(note.first);
   }
 
   @override
-  Future getUser({required String email}) async {
-    // TODO: implement getUser
-    throw UnimplementedError();
+  Future<DatabaseUser> getUser({required String email}) async {
+    final db = _getDatabaseOrThrow();
+    final user = await db
+        .query(userTable, where: 'email = ?', whereArgs: [email.toLowerCase()]);
+
+    if (user.isEmpty) {
+      throw CouldNotFindUser();
+    }
+
+    return DatabaseUser.fromRow(user.first);
   }
 
   @override
@@ -120,17 +159,34 @@ class NotesService implements NotesProvider {
     }
   }
 
-  Future<void> createTable(String SqlCode) async {
+  Future<void> createTable(String sqlCode) async {
     final db = _getDatabaseOrThrow();
 
-    await db.execute(SqlCode);
+    await db.execute(sqlCode);
   }
 
   @override
-  Future<DatabaseNote> updateNote(
-      {required DatabaseNote note, required String text}) {
-    // TODO: implement updateNote
-    throw UnimplementedError();
+  Future<DatabaseNote> updateNote({
+    required DatabaseNote note,
+    required String text,
+  }) async {
+    // get db
+    final db = _getDatabaseOrThrow();
+    // get note and check exists
+    await getNote(id: note.id);
+    // update
+    final updatesCount = await db.update(
+      noteTable,
+      where: 'id = ?',
+      whereArgs: [note.id],
+      {textColumnName: text, isSyncedWithCloudColumnName: 0},
+    );
+
+    if (updatesCount == 0) {
+      throw CouldNotUpdateNote();
+    }
+    // return new model
+    return await getNote(id: note.id);
   }
 }
 
