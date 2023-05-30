@@ -13,11 +13,27 @@ class NotesService implements NotesProvider {
 
   List<DatabaseNote> _notes = [];
 
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance();
+
+  factory NotesService() => _shared;
+
   final _notesStreamController =
       StreamController<List<DatabaseNote>>.broadcast();
 
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+
+  Future<void> _ensureDbIsOpen() async {
+    try {
+      await open();
+    } on DatabaseAlreadyOpenException {
+      // empty
+    }
+  }
+
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
     try {
+      await _ensureDbIsOpen();
       final user = await getUser(email: email);
       return user;
     } on CouldNotFindUser {
@@ -58,6 +74,8 @@ class NotesService implements NotesProvider {
 
   @override
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
+    await _ensureDbIsOpen();
+
     final db = _getDatabaseOrThrow();
 
     final dbUser = await getUser(email: owner.email);
@@ -103,6 +121,7 @@ class NotesService implements NotesProvider {
 
   @override
   Future<int> deleteAllNotes() async {
+    await _ensureDbIsOpen();
     // get db
     final db = _getDatabaseOrThrow();
     // delete notes all rows
@@ -116,6 +135,7 @@ class NotesService implements NotesProvider {
 
   @override
   Future<void> deleteNote({required int id}) async {
+    await _ensureDbIsOpen();
     // get db
     final db = _getDatabaseOrThrow();
     // delete node
@@ -132,6 +152,8 @@ class NotesService implements NotesProvider {
 
   @override
   Future<void> deleteUser({required String email}) async {
+    await _ensureDbIsOpen();
+
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(userTable,
         where: 'email = ?', whereArgs: [email.toLowerCase()]);
@@ -142,6 +164,8 @@ class NotesService implements NotesProvider {
 
   @override
   Future<Iterable<DatabaseNote>> getAllNotes() async {
+    await _ensureDbIsOpen();
+
     final db = _getDatabaseOrThrow();
 
     final notes = await db.query(noteTable);
@@ -151,6 +175,8 @@ class NotesService implements NotesProvider {
 
   @override
   Future<DatabaseNote> getNote({required int id}) async {
+    await _ensureDbIsOpen();
+
     // get db
     final db = _getDatabaseOrThrow();
     // get note
@@ -170,6 +196,8 @@ class NotesService implements NotesProvider {
 
   @override
   Future<DatabaseUser> getUser({required String email}) async {
+    await _ensureDbIsOpen();
+
     final db = _getDatabaseOrThrow();
     final user = await db
         .query(userTable, where: 'email = ?', whereArgs: [email.toLowerCase()]);
@@ -210,6 +238,7 @@ class NotesService implements NotesProvider {
     required DatabaseNote note,
     required String text,
   }) async {
+    await _ensureDbIsOpen();
     // get db
     final db = _getDatabaseOrThrow();
     // get note and check exists
