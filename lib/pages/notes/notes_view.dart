@@ -35,8 +35,13 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main UI'),
+        title: const Text('Your Notes'),
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(newNoteRoute);
+              },
+              icon: const Icon(Icons.add)),
           PopupMenuButton(
             onSelected: (value) async {
               BuildContext dialogContext = context;

@@ -1,6 +1,7 @@
 import 'package:dart/constants/routes.dart';
 import 'package:dart/pages/home_page.dart';
 import 'package:dart/pages/login_page.dart';
+import 'package:dart/pages/notes/new_note_page.dart';
 import 'package:dart/pages/register.dart';
 import 'package:dart/pages/verify_email.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ void main() {
       loginPage: (context) => const LoginPage(),
       registerPage: (context) => const RegisterPage(),
       homePage: (context) => const HomePage(),
-      verifyEmailRoute: (context) => const VerifyEmailPage()
+      verifyEmailRoute: (context) => const VerifyEmailPage(),
+      newNoteRoute: (context) => const NewNotePage(),
     },
   ));
 }

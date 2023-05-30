@@ -1,5 +1,5 @@
 import 'package:dart/pages/login_page.dart';
-import 'package:dart/pages/notes_view.dart';
+import 'package:dart/pages/notes/notes_view.dart';
 import 'package:dart/pages/verify_email.dart';
 import 'package:dart/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
