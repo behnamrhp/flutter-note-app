@@ -44,17 +44,12 @@ class NotesService implements NotesProvider {
     }
   }
 
-  Future<void> cacheNotes() async {
+  Future<void> _cacheNotes() async {
     final allnotes = await getAllNotes();
 
     _notes = allnotes.toList();
     _notesStreamController.add(_notes);
   }
-
-  final List<String> _tablesSqlCodeList = [
-    createUserTable,
-    createNoteTable,
-  ];
 
   Database _getDatabaseOrThrow() {
     final db = _db;
@@ -85,7 +80,7 @@ class NotesService implements NotesProvider {
     const text = '';
 
     final noteId = await db.insert(noteTable, {
-      userIdColumn: owner.id,
+      userIdColumnName: owner.id,
       textColumnName: text,
       isSyncedWithCloudColumnName: 1,
     });
@@ -218,10 +213,12 @@ class NotesService implements NotesProvider {
       final db = await openDatabase(dbPath);
       _db = db;
 
-      _tablesSqlCodeList.map((sqlCode) async {
-        await createTable(sqlCode);
-      });
-      await cacheNotes();
+      // create the user table
+      await db.execute(createUserTable);
+      // create note table
+      await db.execute(createNoteTable);
+
+      await _cacheNotes();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectory();
     }
