@@ -1,5 +1,7 @@
 import 'package:dart/constants/routes.dart';
+import 'package:dart/pages/notes/notes_list_vew.dart';
 import 'package:dart/services/auth/auth_service.dart';
+import 'package:dart/services/crud/models/model_note.dart';
 import 'package:dart/services/crud/notes_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +84,15 @@ class _NotesViewState extends State<NotesView> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return const Text('Waiting for all notes...');
+                      if (!snapshot.hasData) {
+                        return const CircularProgressIndicator();
+                      }
+                      final allNotes = snapshot.data as List<DatabaseNote>;
+                      onDeleteNote(note) async {
+                        await _notesService.deleteNote(id: note.id);
+                      }
+                      return NotesListView(
+                          notes: allNotes, onDeleteNote: onDeleteNote);
                     default:
                       return const CircularProgressIndicator();
                   }
