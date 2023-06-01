@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dart/extensions/list/filter.dart';
 import 'package:dart/services/crud/models/model_note.dart';
 import 'package:dart/services/crud/models/model_user.dart';
 import 'package:dart/services/crud/notes_exceptions.dart';
@@ -10,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 
 class NotesService implements NotesProvider {
   Database? _db;
+
+  DatabaseUser? _user;
 
   List<DatabaseNote> _notes = [];
 
@@ -25,7 +28,13 @@ class NotesService implements NotesProvider {
 
   late final StreamController<List<DatabaseNote>> _notesStreamController;
 
-  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
+  Stream<List<DatabaseNote>> get allNotes =>
+      _notesStreamController.stream.filter((note) {
+        final currentUser = _user;
+        if (currentUser == null) throw UserShouldBeSetBeforeReadingAllNotes();
+
+        return note.userId == currentUser.id;
+      });
 
   Future<void> _ensureDbIsOpen() async {
     try {
@@ -35,13 +44,22 @@ class NotesService implements NotesProvider {
     }
   }
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     try {
       await _ensureDbIsOpen();
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on CouldNotFindUser {
       final newUser = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = newUser;
+      }
       return newUser;
     } catch (e) {
       rethrow;
