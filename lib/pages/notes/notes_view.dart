@@ -41,7 +41,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(newNoteRoute);
+                Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
               },
               icon: const Icon(Icons.add)),
           PopupMenuButton(
@@ -91,8 +91,16 @@ class _NotesViewState extends State<NotesView> {
                       onDeleteNote(note) async {
                         await _notesService.deleteNote(id: note.id);
                       }
+
+                      onTapNote(DatabaseNote note) {
+                        Navigator.of(context).pushNamed(createOrUpdateNoteRoute,
+                            arguments: note);
+                      }
                       return NotesListView(
-                          notes: allNotes, onDeleteNote: onDeleteNote);
+                        notes: allNotes,
+                        onDeleteNote: onDeleteNote,
+                        onTap: onTapNote,
+                      );
                     default:
                       return const CircularProgressIndicator();
                   }

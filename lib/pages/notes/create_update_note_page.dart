@@ -1,16 +1,18 @@
 import 'package:dart/services/auth/auth_service.dart';
 import 'package:dart/services/crud/models/model_note.dart';
 import 'package:dart/services/crud/notes_service.dart';
+import 'package:dart/utils/get_arguments.dart';
 import 'package:flutter/material.dart';
 
-class NewNotePage extends StatefulWidget {
-  const NewNotePage({super.key});
+class CreateUpdateNoteViewPage extends StatefulWidget {
+  const CreateUpdateNoteViewPage({super.key});
 
   @override
-  State<NewNotePage> createState() => _NewNotePageState();
+  State<CreateUpdateNoteViewPage> createState() =>
+      _CreateUpdateNoteViewPageState();
 }
 
-class _NewNotePageState extends State<NewNotePage> {
+class _CreateUpdateNoteViewPageState extends State<CreateUpdateNoteViewPage> {
   DatabaseNote? _note;
 
   late final NotesService _notesService;
@@ -40,7 +42,14 @@ class _NewNotePageState extends State<NewNotePage> {
     _textController.addListener(_textControllerListener);
   }
 
-  Future<DatabaseNote> createNewNote() async {
+  Future<DatabaseNote> createOrGetExistenceNote(BuildContext context) async {
+    final widgetNote = context.getArguments<DatabaseNote>();
+
+    if (widgetNote != null) {
+      _note = widgetNote;
+      _textController.text = widgetNote.text;
+      return widgetNote;
+    }
     final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
@@ -50,7 +59,7 @@ class _NewNotePageState extends State<NewNotePage> {
     final owner = await _notesService.getUser(email: email);
 
     final newNote = await _notesService.createNote(owner: owner);
-
+    _note = newNote;
     return newNote;
   }
 
@@ -85,7 +94,7 @@ class _NewNotePageState extends State<NewNotePage> {
         title: const Text('New Note'),
       ),
       body: FutureBuilder(
-        future: createNewNote(),
+        future: createOrGetExistenceNote(context),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
