@@ -1,7 +1,7 @@
 import 'package:dart/constants/routes.dart';
 import 'package:dart/services/auth/auth_exception.dart';
 import 'package:dart/services/auth/auth_service.dart';
-import 'package:dart/utils/show_error_dialog.dart';
+import 'package:dart/utils/dialogs/show_error_dialog.dart';
 import 'package:dart/utils/user_auth.dart';
 import 'package:flutter/material.dart';
 
