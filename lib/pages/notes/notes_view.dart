@@ -1,8 +1,9 @@
 import 'package:dart/constants/routes.dart';
 import 'package:dart/pages/notes/notes_list_vew.dart';
 import 'package:dart/services/auth/auth_service.dart';
-import 'package:dart/services/crud/models/model_note.dart';
-import 'package:dart/services/crud/notes_service.dart';
+import 'package:dart/services/cloud/cloud_note.dart';
+import 'package:dart/services/cloud/firebase_cloud_storage.dart';
+import 'package:dart/utils/dialogs/logout_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -18,19 +19,13 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  late final NotesService _notesService;
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  late final FirebaseCloudStorage _notesService;
+  String get useId => AuthService.firebase().currentUser!.id;
 
   @override
   void initState() {
-    _notesService = NotesService();
+    _notesService = FirebaseCloudStorage();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
   }
 
   @override
@@ -73,38 +68,28 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: _notesService.getOrCreateUser(email: userEmail),
+      body: StreamBuilder(
+        stream: _notesService.allNotes(ownerUserId: useId),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return StreamBuilder(
-                stream: _notesService.allNotes,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (!snapshot.hasData) {
-                        return const CircularProgressIndicator();
-                      }
-                      final allNotes = snapshot.data as List<DatabaseNote>;
-                      onDeleteNote(note) async {
-                        await _notesService.deleteNote(id: note.id);
-                      }
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (!snapshot.hasData) {
+                return const CircularProgressIndicator();
+              }
+              final allNotes = snapshot.data as Iterable<CloudNote>;
+              onDeleteNote(CloudNote note) async {
+                await _notesService.deleteNote(documentId: note.documentId);
+              }
 
-                      onTapNote(DatabaseNote note) {
-                        Navigator.of(context).pushNamed(createOrUpdateNoteRoute,
-                            arguments: note);
-                      }
-                      return NotesListView(
-                        notes: allNotes,
-                        onDeleteNote: onDeleteNote,
-                        onTap: onTapNote,
-                      );
-                    default:
-                      return const CircularProgressIndicator();
-                  }
-                },
+              onTapNote(CloudNote note) {
+                Navigator.of(context)
+                    .pushNamed(createOrUpdateNoteRoute, arguments: note);
+              }
+              return NotesListView(
+                notes: allNotes,
+                onDeleteNote: onDeleteNote,
+                onTap: onTapNote,
               );
             default:
               return const CircularProgressIndicator();
@@ -113,28 +98,4 @@ class _NotesViewState extends State<NotesView> {
       ),
     );
   }
-}
-
-Future<bool> showLogoutDialog(BuildContext context) {
-  return showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Sign out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: const Text('Cancel')),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Log out'),
-            )
-          ],
-        );
-      }).then((value) => value ?? false);
 }
