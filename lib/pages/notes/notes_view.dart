@@ -1,11 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dart/constants/routes.dart';
 import 'package:dart/pages/notes/notes_list_vew.dart';
 import 'package:dart/services/auth/auth_service.dart';
+import 'package:dart/services/auth/bloc/auth_bloc.dart';
+import 'package:dart/services/auth/bloc/auth_event.dart';
 import 'package:dart/services/cloud/cloud_note.dart';
 import 'package:dart/services/cloud/firebase_cloud_storage.dart';
 import 'package:dart/utils/dialogs/logout_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum MenuActions {
   logout,
@@ -41,17 +45,11 @@ class _NotesViewState extends State<NotesView> {
               icon: const Icon(Icons.add)),
           PopupMenuButton(
             onSelected: (value) async {
-              BuildContext dialogContext = context;
-
               switch (value) {
                 case MenuActions.logout:
                   final isLogoutSelected = await showLogoutDialog(context);
                   if (isLogoutSelected) {
-                    await FirebaseAuth.instance.signOut();
-                    if (context.mounted) {
-                      Navigator.of(dialogContext)
-                          .pushNamedAndRemoveUntil(loginPage, (route) => false);
-                    }
+                    context.read<AuthBloc>().add(const AuthEventLogOut());
                   }
                   break;
                 default:
