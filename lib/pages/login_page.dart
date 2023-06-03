@@ -2,6 +2,7 @@ import 'package:dart/constants/routes.dart';
 import 'package:dart/services/auth/auth_exception.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/bloc/auth_event.dart';
+import 'package:dart/services/auth/bloc/auth_state.dart';
 import 'package:dart/utils/dialogs/show_error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,31 +50,36 @@ class _LoginPageState extends State<LoginPage> {
             enableSuggestions: false,
             decoration: const InputDecoration(hintText: 'Enter your password'),
           ),
-          TextButton(
-            onPressed: () async {
-              try {
-                final email = _email.text;
-                final password = _password.text;
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is! AuthStateLoggedOut) return;
 
-                context.read<AuthBloc>().add(AuthEventLogIn(email, password));
-              } on UserNotFoundAuthException {
+              if (state.exception is UserNotFoundAuthException) {
                 await showErrorDialog(
                   context,
                   'User not found',
                 );
-              } on WrongPasswordAuthException {
+              } else if (state.exception is WrongPasswordAuthException) {
                 await showErrorDialog(
                   context,
                   'Wrong credentials',
                 );
-              } on GenericAuthException {
+              } else if (state.exception is GenericAuthException) {
                 await showErrorDialog(
                   context,
                   'Authentication error',
                 );
               }
             },
-            child: const Text('Login'),
+            child: TextButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+
+                context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+              },
+              child: const Text('Login'),
+            ),
           ),
           TextButton(
               onPressed: () => {
