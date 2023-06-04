@@ -1,3 +1,4 @@
+import 'package:dart/pages/forgot_password_page.dart';
 import 'package:dart/pages/login_page.dart';
 import 'package:dart/pages/notes/notes_view.dart';
 import 'package:dart/pages/register.dart';
@@ -33,6 +34,8 @@ class HomePage extends StatelessWidget {
           return const VerifyEmailPage();
         } else if (state is AuthStateLoggedOut) {
           return const LoginPage();
+        } else if (state is AuthStateForgotPassword) {
+          return const ForgotPasswordPage();
         } else if (state is AuthStateRegistering) {
           return const RegisterPage();
         } else {

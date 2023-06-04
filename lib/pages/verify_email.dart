@@ -35,7 +35,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             onPressed: () async {
               context.read<AuthBloc>().add(const AuthEventLogOut());
             },
-            child: const Text('Restart'),
+            child: const Text('To login'),
           )
         ],
       ),
