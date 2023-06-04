@@ -43,6 +43,11 @@ class _LoginPageState extends State<LoginPage> {
             context,
             'User not found',
           );
+        } else if (state.exception is UserNotFoundAuthException) {
+          await showErrorDialog(
+            context,
+            'Cannot find a user with the entered credentials!',
+          );
         } else if (state.exception is WrongPasswordAuthException) {
           await showErrorDialog(
             context,
@@ -57,36 +62,51 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Login')),
-        body: Column(children: [
-          TextField(
-            controller: _email,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(hintText: 'Enter your email'),
-          ),
-          TextField(
-            controller: _password,
-            autocorrect: false,
-            obscureText: true,
-            enableSuggestions: false,
-            decoration: const InputDecoration(hintText: 'Enter your password'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                  'Please log in to your account in order to interact with and create notes!'),
+              TextField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(hintText: 'Enter your email'),
+              ),
+              TextField(
+                controller: _password,
+                autocorrect: false,
+                obscureText: true,
+                enableSuggestions: false,
+                decoration:
+                    const InputDecoration(hintText: 'Enter your password'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
 
-              context.read<AuthBloc>().add(AuthEventLogIn(email, password));
-            },
-            child: const Text('Login'),
+                  context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+                },
+                child: const Text('Login'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventForgotPassword());
+                },
+                child: const Text('I forgot my password'),
+              ),
+              TextButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(
+                          const AuthEventShouldRegister(),
+                        );
+                  },
+                  child:
+                      const Text('haven\'t register yet?! go for registration'))
+            ],
           ),
-          TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(
-                      const AuthEventShouldRegister(),
-                    );
-              },
-              child: const Text('haven\'t register yet?! go for registration'))
-        ]),
+        ),
       ),
     );
   }
