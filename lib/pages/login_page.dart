@@ -1,8 +1,8 @@
-import 'package:dart/constants/routes.dart';
 import 'package:dart/services/auth/auth_exception.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/bloc/auth_event.dart';
 import 'package:dart/services/auth/bloc/auth_state.dart';
+import 'package:dart/utils/dialogs/loading_dialog.dart';
 import 'package:dart/utils/dialogs/show_error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +17,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+
+  CloseDialog? _closeLoadingDialog;
 
   @override
   void initState() {
@@ -35,7 +37,38 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is! AuthStateLoggedOut) return;
+        final closedialog = _closeLoadingDialog;
+
+        if (!state.isLoading && closedialog != null) {
+          closedialog();
+          _closeLoadingDialog = null;
+        } else if (state.isLoading && closedialog == null) {
+          _closeLoadingDialog = showLoadingDialog(
+            context: context,
+            text: 'Loading...',
+          );
+        }
+        if (state.exception is UserNotFoundAuthException) {
+          await showErrorDialog(
+            context,
+            'User not found',
+          );
+        } else if (state.exception is WrongPasswordAuthException) {
+          await showErrorDialog(
+            context,
+            'Wrong credentials',
+          );
+        } else if (state.exception is GenericAuthException) {
+          await showErrorDialog(
+            context,
+            'Authentication error',
+          );
+        }
+      },
+      child: Scaffold(
         appBar: AppBar(title: const Text('Login')),
         body: Column(children: [
           TextField(
@@ -50,43 +83,24 @@ class _LoginPageState extends State<LoginPage> {
             enableSuggestions: false,
             decoration: const InputDecoration(hintText: 'Enter your password'),
           ),
-          BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) async {
-              if (state is! AuthStateLoggedOut) return;
+          TextButton(
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
 
-              if (state.exception is UserNotFoundAuthException) {
-                await showErrorDialog(
-                  context,
-                  'User not found',
-                );
-              } else if (state.exception is WrongPasswordAuthException) {
-                await showErrorDialog(
-                  context,
-                  'Wrong credentials',
-                );
-              } else if (state.exception is GenericAuthException) {
-                await showErrorDialog(
-                  context,
-                  'Authentication error',
-                );
-              }
+              context.read<AuthBloc>().add(AuthEventLogIn(email, password));
             },
-            child: TextButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-
-                context.read<AuthBloc>().add(AuthEventLogIn(email, password));
-              },
-              child: const Text('Login'),
-            ),
+            child: const Text('Login'),
           ),
           TextButton(
-              onPressed: () => {
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil(registerPage, (route) => false)
-                  },
+              onPressed: () {
+                context.read<AuthBloc>().add(
+                      const AuthEventShouldRegister(),
+                    );
+              },
               child: const Text('haven\'t register yet?! go for registration'))
-        ]));
+        ]),
+      ),
+    );
   }
 }
