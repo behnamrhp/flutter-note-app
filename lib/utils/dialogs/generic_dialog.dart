@@ -13,7 +13,7 @@ Future<T?> shownGenericDialog<T>(
     builder: (context) {
       return AlertDialog(
         title: Text(title),
-        content: Text(title),
+        content: Text(content),
         actions: options.keys.map((optionTitle) {
           final value = options[optionTitle];
           return TextButton(
