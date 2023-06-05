@@ -1,0 +1,62 @@
+{
+
+    "logout_button": "خروج",
+    "note": "یادداشت",
+    "cancel": "خیر",
+    "yes": "بله",
+    "delete": "حذف",
+    "sharing": "اشتراک گذاری",
+    "ok": "باشه",
+    "login": "ورود",
+    "verify_email": "تایید ایمیل",
+    "register": "عضویت",
+    "restart": "شروع مجدد",
+
+    "start_typing_your_note": "یادداشت خود رو تایپ کنید",
+    "delete_note_prompt": "از حذف این یادداشت اطمینان دارید؟",
+    "cannot_share_empty_note_prompt": "یادداشت خالی را نمیتوان اشتراک گذاری کرد",
+    "generic_error_prompt": "یک خطا رخ داده",
+    "logout_dialog_prompt": "آیا از خروج اطمینان دارید؟",
+
+    "password_reset": "گذرواژه مجدد",
+    "password_reset_dialog_prompt": "لینک تغییر گذرواژه برای شما ارسال شد. لطفا صندوق پست الکترونیکی خود را چک کنید",
+
+    "login_error_cannot_find_user": "کاربری مطابق با اطلاعات شما یافت نشد!",
+    "login_error_wrong_credentials": "اطلاعات وارد شده اشتباه است",
+    "login_error_auth_error": "خطا اهراز هویت",
+
+    "login_view_prompt": "برای مدیریت یادداشت ها خود لطفا اطلاعات حساب کاربری خود را وارد کنید",
+    
+    "login_view_forgot_password": "گذرواژه خود را فراموش کردم",
+    "login_view_not_registered_yet": "هنوز ثبت نام نکردید! از اینجا ثبت نام کنید",
+
+    "email_text_field_placeholder": "ایمیل خود را اینجا وارد کنید",
+    "password_text_field_placeholder": "گذرواژه خود را اینجا وارد کنید",
+    
+    "forgot_password": "فراموشی گذرواژه",
+    "forgot_password_view_generic_error": "ما نتوانستیم اطلاعات شما را پردازش کنیم. اگر هنوز ثبت نام نکردید به صفحه ثبت نام مراجعه کنید",
+    "forgot_password_view_prompt": "اگر گذرواژه خود را فراموش کرده اید تنها ایمیل خود را وارد کنید و سپس ما گذرواژه جدید را به ایمیل شما ارسال میکنیم",
+    "forgot_password_view_send_me_link": "لینک تغییر گذرواژه را بفرست",
+    "forgot_password_view_back_to_login": "بازگشت به صفحه ورود",
+
+    "register_error_weak_password": "این گذرواژه به اندازه کافی امن نیست یک گذرواژه دیگر امتحان کنید",
+    "register_error_email_already_in_use": "این ایمیل قبلا استفاده شده لطفا یک ایمیل دیگر وارد کنید",
+    "register_error_generic": "خطا در ثبت نام لطفا بعدا تلاش کنید",
+    "register_error_invalid_email": "ایمیل وارد شده نامعتبر است یک ایمیل دیگر وارد کنید",
+    "register_view_prompt": "ایمیل و گذرواژه خود را برای دیدن یادداشت ها وارد کنید",
+    "register_view_already_registered": "قبلا ثبت نام کردید؟ از این صفحه وارد شوید",
+
+    "verify_email_view_prompt": "یک لینک ایمیل برای تایید اهراز هویت برای شما ارسال شد. لطفا صندوق پستی خود را بررسی کنید و روی لینک مدنظر کلیک کنید",
+    "verify_email_send_email_verification": "فرستادن ایمیل تایید",
+    "please_wait": "لطفا صبر کنید",
+    "notes_title": "{count, plural, =0{هیچ یادداشتی وجود ندارد} =1{یک یادداشت} other{{count} یادداشت}}",
+    "@notes_title": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "۳ یادداشت"
+            }
+        }
+    }
+
+}

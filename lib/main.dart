@@ -5,10 +5,13 @@ import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/firebase_auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     title: 'My note',
     theme: ThemeData(primarySwatch: Colors.blue),
     home: BlocProvider(
