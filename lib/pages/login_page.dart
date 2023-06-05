@@ -1,3 +1,4 @@
+import 'package:dart/extensions/buildcontext/loc.dart';
 import 'package:dart/services/auth/auth_exception.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/bloc/auth_event.dart';
@@ -41,45 +42,45 @@ class _LoginPageState extends State<LoginPage> {
         if (state.exception is UserNotFoundAuthException) {
           await showErrorDialog(
             context,
-            'User not found',
+            context.loc.login_error_cannot_find_user,
           );
         } else if (state.exception is UserNotFoundAuthException) {
           await showErrorDialog(
             context,
-            'Cannot find a user with the entered credentials!',
+            context.loc.login_error_cannot_find_user,
           );
         } else if (state.exception is WrongPasswordAuthException) {
           await showErrorDialog(
             context,
-            'Wrong credentials',
+            context.loc.login_error_wrong_credentials,
           );
         } else if (state.exception is GenericAuthException) {
           await showErrorDialog(
             context,
-            'Authentication error',
+            context.loc.login_error_auth_error,
           );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Login')),
+        appBar: AppBar(title: Text(context.loc.login)),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
-                  'Please log in to your account in order to interact with and create notes!'),
+              Text(context.loc.login_view_prompt),
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: 'Enter your email'),
+                decoration: InputDecoration(
+                    hintText: context.loc.email_text_field_placeholder),
               ),
               TextField(
                 controller: _password,
                 autocorrect: false,
                 obscureText: true,
                 enableSuggestions: false,
-                decoration:
-                    const InputDecoration(hintText: 'Enter your password'),
+                decoration: InputDecoration(
+                    hintText: context.loc.password_text_field_placeholder),
               ),
               TextButton(
                 onPressed: () async {
@@ -88,13 +89,15 @@ class _LoginPageState extends State<LoginPage> {
 
                   context.read<AuthBloc>().add(AuthEventLogIn(email, password));
                 },
-                child: const Text('Login'),
+                child: Text(context.loc.login),
               ),
               TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(const AuthEventForgotPassword());
                 },
-                child: const Text('I forgot my password'),
+                child: Text(
+                  context.loc.login_view_forgot_password,
+                ),
               ),
               TextButton(
                   onPressed: () {
@@ -102,8 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                           const AuthEventShouldRegister(),
                         );
                   },
-                  child:
-                      const Text('haven\'t register yet?! go for registration'))
+                  child: Text(
+                    context.loc.login_view_not_registered_yet,
+                  ))
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:dart/extensions/buildcontext/loc.dart';
 import 'package:dart/pages/forgot_password_page.dart';
 import 'package:dart/pages/login_page.dart';
 import 'package:dart/pages/notes/notes_view.dart';
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
         if (state.isLoading) {
           return LoadingScreen().show(
             context: context,
-            text: state.loadingText ?? 'Please wait a moment',
+            text: state.loadingText ?? context.loc.please_wait,
           );
         }
         LoadingScreen().hide();
