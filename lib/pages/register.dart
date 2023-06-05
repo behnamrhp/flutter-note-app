@@ -1,3 +1,4 @@
+import 'package:dart/extensions/buildcontext/loc.dart';
 import 'package:dart/services/auth/auth_exception.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/bloc/auth_event.dart';
@@ -41,44 +42,47 @@ class _RegisterPageState extends State<RegisterPage> {
         if (state.exception is WeakPasswordAuthException) {
           await showErrorDialog(
             context,
-            'Weak password',
+            context.loc.register_error_weak_password,
           );
         } else if (state.exception is EmailAlreadyInUseAuthException) {
           await showErrorDialog(
             context,
-            'Email is already in use',
+            context.loc.register_error_email_already_in_use,
           );
         } else if (state.exception is InvalidEmailAuthException) {
           await showErrorDialog(
             context,
-            'This is an invalid email address',
+            context.loc.register_error_generic,
           );
         } else if (state.exception is GenericAuthException) {
           await showErrorDialog(
             context,
-            'Failed to register',
+            context.loc.register_error_invalid_email,
           );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Register')),
+        appBar: AppBar(title: Text(context.loc.register)),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text('Enter your email and password to see your notes!'),
+              Text(context.loc.register_view_prompt),
               TextField(
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: 'Enter your email'),
+                decoration: InputDecoration(
+                  hintText: context.loc.email_text_field_placeholder,
+                ),
               ),
               TextField(
                 controller: _password,
                 autocorrect: false,
                 obscureText: true,
                 enableSuggestions: false,
-                decoration:
-                    const InputDecoration(hintText: 'Enter your password'),
+                decoration: InputDecoration(
+                  hintText: context.loc.password_text_field_placeholder,
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -91,7 +95,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       );
                 },
-                child: const Text('Register'),
+                child: Text(
+                  context.loc.register,
+                ),
               ),
               TextButton(
                   onPressed: () {
@@ -99,7 +105,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           const AuthEventLogOut(),
                         );
                   },
-                  child: const Text('already have an account?!'))
+                  child: Text(
+                    context.loc.register_view_already_registered,
+                  ))
             ],
           ),
         ),

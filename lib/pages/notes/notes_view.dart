@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:dart/constants/routes.dart';
+import 'package:dart/extensions/buildcontext/loc.dart';
 import 'package:dart/pages/notes/notes_list_vew.dart';
 import 'package:dart/services/auth/auth_service.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
@@ -36,7 +37,18 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Notes'),
+        title: StreamBuilder(
+          stream: _notesService.allNotes(ownerUserId: useId),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final noteCount = snapshot.data?.length ?? 0;
+              final text = context.loc.notes_title(noteCount);
+              return Text(text);
+            } else {
+              return const Text('');
+            }
+          },
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -56,10 +68,10 @@ class _NotesViewState extends State<NotesView> {
               }
             },
             itemBuilder: (context) {
-              return const [
+              return [
                 PopupMenuItem<MenuActions>(
                   value: MenuActions.logout,
-                  child: Text('log out'),
+                  child: Text(context.loc.logout_button),
                 )
               ];
             },

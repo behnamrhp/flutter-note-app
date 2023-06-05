@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:dart/extensions/buildcontext/loc.dart';
 import 'package:dart/services/auth/bloc/auth_bloc.dart';
 import 'package:dart/services/auth/bloc/auth_event.dart';
 import 'package:dart/services/auth/bloc/auth_state.dart';
@@ -42,27 +43,30 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         }
 
         if (state.exception != null) {
-          await showErrorDialog(context,
-              'We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step.');
+          await showErrorDialog(
+            context,
+            context.loc.forgot_password_view_generic_error,
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Forgot Password'),
+          title: Text(context.loc.forgot_password),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Text(
-                  'If you forgot your password, simply enter your email and we will send you a password reset link.'),
+              Text(
+                context.loc.forgot_password_view_prompt,
+              ),
               TextField(
                 autofocus: true,
                 autocorrect: false,
                 keyboardType: TextInputType.emailAddress,
                 controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Your email address...',
+                decoration: InputDecoration(
+                  hintText: context.loc.email_text_field_placeholder,
                 ),
               ),
               TextButton(
@@ -73,7 +77,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         AuthEventForgotPassword(email: email),
                       );
                 },
-                child: const Text('Send me password reset link'),
+                child: Text(
+                  context.loc.forgot_password_view_send_me_link,
+                ),
               ),
               TextButton(
                   onPressed: () {
@@ -81,7 +87,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           const AuthEventLogOut(),
                         );
                   },
-                  child: const Text('Back to login page')),
+                  child: Text(
+                    context.loc.forgot_password_view_back_to_login,
+                  )),
             ],
           ),
         ),
