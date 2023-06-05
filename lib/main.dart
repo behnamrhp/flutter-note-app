@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-    title: 'Flutter Demo',
+    title: 'My note',
     theme: ThemeData(primarySwatch: Colors.blue),
     home: BlocProvider(
       create: (context) => AuthBloc(FirebaseAuthProvider()),
